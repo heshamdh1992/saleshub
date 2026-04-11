@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SalesHub{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="{% static 'css/app.css' %}?v=20260408" rel="stylesheet">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#054239">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar shadow-sm">
+    <div class="container-fluid app-shell px-3 px-md-4">
+        <a class="navbar-brand fw-bold" href="{% url 'core:dashboard' %}">SalesHub</a>
+
+        {% if request.user.is_authenticated %}
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav mx-auto mb-3 mb-lg-0 gap-lg-2">
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                           href="{% url 'core:dashboard' %}">
+                            لوحة التحكم
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.namespace == 'products' %}active{% endif %}"
+                           href="{% url 'products:list' %}">
+                            المنتجات
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.namespace == 'sales' %}active{% endif %}"
+                           href="{% url 'sales:list' %}">
+                            المبيعات
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.namespace == 'customers' %}active{% endif %}"
+                           href="{% url 'customers:list' %}">
+                            العملاء
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if request.resolver_match.namespace == 'reports' %}active{% endif %}"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            التقارير
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'reports:sales_report' %}">
+                                    تقرير المبيعات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'reports:product_report' %}">
+                                    تقرير المنتجات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'reports:customer_report' %}">
+                                    تقرير العملاء
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if request.resolver_match.namespace == 'currencies' or request.resolver_match.namespace == 'merchants' or request.resolver_match.namespace == 'inventory' %}active{% endif %}"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            الإعدادات
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'merchants:current' %}">
+                                    إعدادات المتجر
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'currencies:currency_list' %}">
+                                    العملات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'currencies:rate_list' %}">
+                                    أسعار الصرف
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'inventory:alerts' %}">
+                                    تنبيهات المخزون
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+<div class="d-flex align-items-center gap-2 text-white small app-user-bar">
+    <span class="app-user-badge">
+        {{ request.user.full_name|default:request.user.username }}
+    </span>
+
+    <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-light px-3">
+            خروج
+        </button>
+    </form>
+</div>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+
+<div id="toast-container" class="position-fixed top-0 start-0 p-3" style="z-index: 1080; min-width: 320px;"></div>
+
+<main class="container app-shell app-page-wrap px-3 px-md-4">
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} mb-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<script src="{% static 'js/offline-db.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+window.showAppToast = function(message, type = "success", delay = 2500) {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const bgClass = {
+        success: "text-bg-success",
+        danger: "text-bg-danger",
+        warning: "text-bg-warning",
+        info: "text-bg-info"
+    }[type] || "text-bg-secondary";
+
+    const toastId = "toast-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+        <div id="${toastId}" class="toast align-items-center border-0 ${bgClass}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+
+    const toastEl = wrapper.firstElementChild;
+    container.appendChild(toastEl);
+
+    const toast = new bootstrap.Toast(toastEl, { delay });
+    toast.show();
+
+    toastEl.addEventListener("hidden.bs.toast", function() {
+        toastEl.remove();
+    });
+};
+
+window.setButtonLoading = function(button, isLoading, loadingText = "جارٍ التنفيذ...") {
+    if (!button) return;
+
+    if (isLoading) {
+        if (!button.dataset.originalText) {
+            button.dataset.originalText = button.innerHTML;
+        }
+        button.disabled = true;
+        button.innerHTML = loadingText;
+    } else {
+        button.disabled = false;
+        if (button.dataset.originalText) {
+            button.innerHTML = button.dataset.originalText;
+        }
+    }
+};
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js", { scope: "/" })
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.log("SW error:", err));
+}
+</script>
+
+<script>
+(function() {
+    const bootstrapBtn = document.getElementById("offline-bootstrap-btn");
+    if (!bootstrapBtn) return;
+
+    bootstrapBtn.addEventListener("click", async function() {
+        try {
+            setButtonLoading(bootstrapBtn, true, "جارٍ التحميل...");
+
+            const payload = await fetchAndStoreBootstrap("{% url 'api:offline_bootstrap' %}");
+
+            showAppToast(
+                "تم تحديث بيانات الأوفلاين بنجاح. " +
+                "عدد المنتجات: " + (payload.counts?.products || 0) +
+                " | عدد أسعار الصرف: " + (payload.counts?.exchange_rates || 0),
+                "success",
+                4000
+            );
+        } catch (error) {
+            showAppToast(error.message || "حدث خطأ أثناء تحديث بيانات الأوفلاين.", "danger", 4000);
+        } finally {
+            setButtonLoading(bootstrapBtn, false);
+        }
+    });
+})();
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}مسح الباركود{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <h1 class="h3 fw-bold mb-2">مسح الباركود</h1>
+
+                    {% if mode == "search" %}
+                        <p class="text-muted mb-0">
+                            وجّه الكاميرا نحو الباركود ليتم تنفيذ البحث مباشرة داخل قائمة المنتجات.
+                        </p>
+                    {% elif mode == "pos" %}
+                        <p class="text-muted mb-0">
+                            وجّه الكاميرا نحو الباركود ليتم إضافة المنتج مباشرة إلى سلة البيع.
+                        </p>
+                    {% else %}
+                        <p class="text-muted mb-0">
+                            وجّه الكاميرا نحو الباركود ليتم تعبئة الحقل تلقائيًا في صفحة إضافة المنتج.
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div class="scanner-frame rounded-4 p-3 p-md-4 mb-4">
+                    <div id="reader" style="width: 100%;"></div>
+                </div>
+
+                <div class="d-grid">
+                    {% if mode == "search" %}
+                        <a href="{% url 'products:list' %}" class="btn btn-outline-secondary py-3 rounded-3">
+                            العودة إلى المنتجات
+                        </a>
+                    {% elif mode == "pos" %}
+                        <a href="{% url 'sales:pos' %}" class="btn btn-outline-secondary py-3 rounded-3">
+                            العودة إلى نقطة البيع
+                        </a>
+                    {% else %}
+                        <a href="{% url 'products:add' %}" class="btn btn-outline-secondary py-3 rounded-3">
+                            العودة إلى إضافة منتج
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if mode == "pos" %}
+<form id="pos-scan-form" method="post" action="{% url 'sales:cart_add_by_barcode' %}" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="barcode" id="pos-barcode-input">
+</form>
+{% endif %}
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    const mode = "{{ mode }}";
+
+    function onScanSuccess(decodedText, decodedResult) {
+        if (mode === "search") {
+            window.location.href = "{% url 'products:list' %}?q=" + encodeURIComponent(decodedText);
+        } else if (mode === "pos") {
+            window.location.href = "{% url 'sales:pos' %}?scanned_barcode=" + encodeURIComponent(decodedText);
+        } else {
+            window.location.href = "{% url 'products:add' %}?barcode=" + encodeURIComponent(decodedText);
+        }
+    }
+
+    function onScanFailure(error) {
+    }
+
+    const html5QrCodeScanner = new Html5QrcodeScanner(
+        "reader",
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 120 },
+            rememberLastUsedCamera: true,
+            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+        },
+        false
+    );
+
+    html5QrCodeScanner.render(onScanSuccess, onScanFailure);
+</script>
+
+<style>
+    .scanner-frame {
+        background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+        border: 1px solid #e9ecef;
+    }
+
+    #reader {
+        overflow: hidden;
+        border-radius: 1rem;
+    }
+
+    #reader video {
+        border-radius: 1rem;
+    }
+</style>
+{% endblock %}

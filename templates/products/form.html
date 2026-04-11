@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}تعديل منتج{% else %}إضافة منتج{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div>
+                        <h1 class="h3 fw-bold mb-1">
+                            {% if object %}تعديل منتج{% else %}إضافة منتج{% endif %}
+                        </h1>
+                        <p class="text-muted mb-0">
+                            أدخل بيانات المنتج الأساسية والتسعير والمخزون بطريقة منظمة
+                        </p>
+                    </div>
+
+                    <div>
+                        <a href="{% url 'products:scanner' %}" class="btn btn-outline-dark rounded-3 px-4">
+                            مسح باركود
+                        </a>
+                    </div>
+                </div>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger rounded-3 mb-4">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="border rounded-4 p-4 mb-4">
+                        <h2 class="h5 fw-bold mb-3">البيانات الأساسية</h2>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.name.label }}</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.sku.label }}</label>
+                            {{ form.sku }}
+                            {% if form.sku.errors %}
+                                <div class="text-danger small mt-1">{{ form.sku.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold">{{ form.barcode.label }}</label>
+                            <div class="input-group">
+                                {{ form.barcode }}
+                                <a href="{% url 'products:scanner' %}" class="btn btn-outline-secondary">
+                                    مسح
+                                </a>
+                            </div>
+                            {% if form.barcode.errors %}
+                                <div class="text-danger small mt-1">{{ form.barcode.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="border rounded-4 p-4 mb-4">
+                        <h2 class="h5 fw-bold mb-3">التسعير والمخزون</h2>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">{{ form.base_price_usd.label }}</label>
+                                {{ form.base_price_usd }}
+                                {% if form.base_price_usd.errors %}
+                                    <div class="text-danger small mt-1">{{ form.base_price_usd.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">{{ form.cost_price_usd.label }}</label>
+                                {{ form.cost_price_usd }}
+                                {% if form.cost_price_usd.errors %}
+                                    <div class="text-danger small mt-1">{{ form.cost_price_usd.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">{{ form.stock_quantity.label }}</label>
+                                {{ form.stock_quantity }}
+                                {% if form.stock_quantity.errors %}
+                                    <div class="text-danger small mt-1">{{ form.stock_quantity.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">{{ form.reorder_level.label }}</label>
+                                {{ form.reorder_level }}
+                                {% if form.reorder_level.errors %}
+                                    <div class="text-danger small mt-1">{{ form.reorder_level.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            {{ form.is_active.label }}
+                        </label>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-dark py-3 rounded-3">
+                            {% if object %}حفظ التعديلات{% else %}إضافة المنتج{% endif %}
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const scannedBarcode = params.get("barcode");
+        const barcodeInput = document.getElementById("barcode-input");
+
+        if (scannedBarcode && barcodeInput && !barcodeInput.value) {
+            barcodeInput.value = scannedBarcode;
+        }
+    })();
+</script>
+{% endblock %}

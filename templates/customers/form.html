@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="mb-4">
+                    <h1 class="h3 fw-bold mb-2">
+                        {% if object %}تعديل عميل{% else %}إضافة عميل{% endif %}
+                    </h1>
+                    <p class="text-muted mb-0">أدخل بيانات العميل الأساسية بشكل منظم لضمان سهولة المتابعة وإدارة الذمم</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {{ form.non_field_errors }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.name.label }}
+                        </label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.phone.label }}
+                        </label>
+                        {{ form.phone }}
+                        {{ form.phone.errors }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            {{ form.notes.label }}
+                        </label>
+                        {{ form.notes }}
+                        {{ form.notes.errors }}
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            {{ form.is_active.label }}
+                        </label>
+                        {{ form.is_active.errors }}
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-dark py-3 rounded-3">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

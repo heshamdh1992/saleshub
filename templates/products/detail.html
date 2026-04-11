@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل المنتج{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body p-4 p-md-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">{{ product.name }}</h1>
+                <p class="text-muted mb-0">البيانات الأساسية للمنتج وحالة المخزون والباركود</p>
+            </div>
+
+            <div>
+                <a href="{% url 'products:edit' product.pk %}" class="btn btn-outline-dark rounded-3 px-4">
+                    تعديل
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">SKU</div>
+                    <div class="fw-semibold">{{ product.sku|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">الباركود</div>
+                    <div class="fw-semibold">{{ product.barcode|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">سعر البيع المرجعي</div>
+                    <div class="fw-semibold">${{ product.base_price_usd }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">تكلفة الشراء</div>
+                    <div class="fw-semibold">${{ product.cost_price_usd }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">الكمية الحالية</div>
+                    <div class="fw-semibold">{{ product.stock_quantity }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">حد التنبيه</div>
+                    <div class="fw-semibold">{{ product.reorder_level }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">الحالة</div>
+                    <div class="fw-semibold">
+                        {% if product.is_active %}
+                            <span class="badge bg-success-subtle text-success border px-2 py-1">نشط</span>
+                        {% else %}
+                            <span class="badge bg-light text-secondary border px-2 py-1">غير نشط</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-4">
+            <div class="d-grid gap-2">
+                {% if not product.barcode %}
+                    <form method="post" action="{% url 'products:generate_barcode' product.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-dark w-100 py-3 rounded-3">توليد باركود داخلي</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'products:label_print' product.pk %}" class="btn btn-outline-dark w-100 py-3 rounded-3">
+                        طباعة الملصق
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if product.barcode %}
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4 text-center">
+            <h2 class="h5 fw-bold mb-2">الباركود</h2>
+            <div class="text-muted mb-3">{{ product.barcode }}</div>
+
+            {% if product.barcode_image %}
+                <div class="border rounded-4 p-3 bg-white">
+                    <img src="{{ product.barcode_image.url }}" alt="{{ product.barcode }}" style="max-width: 100%; height: auto;">
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

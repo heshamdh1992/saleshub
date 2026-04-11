@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}العملات{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">العملات</h1>
+        <p class="text-muted mb-0">إدارة العملات المستخدمة داخل النظام</p>
+    </div>
+    <div>
+        <a href="{% url 'currencies:currency_add' %}" class="btn btn-dark px-4 rounded-3">
+            إضافة عملة
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4">
+        <div class="row align-items-center text-muted small fw-semibold">
+            <div class="col-4 col-md-3">الكود</div>
+            <div class="col-5 col-md-4">الاسم</div>
+            <div class="d-none d-md-block col-md-2">الرمز</div>
+            <div class="col-3 col-md-1 text-center">الحالة</div>
+            <div class="d-none d-md-block col-md-2 text-end">الإجراء</div>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        {% for currency in currencies %}
+            <div class="border-bottom px-4 py-3">
+                <div class="row align-items-center g-2">
+
+                    <div class="col-4 col-md-3">
+                        <div class="fw-bold">{{ currency.code }}</div>
+                    </div>
+
+                    <div class="col-5 col-md-4">
+                        <div>{{ currency.name }}</div>
+                        <div class="d-md-none small text-muted">
+                            {{ currency.symbol|default:"-" }}
+                        </div>
+                    </div>
+
+                    <div class="d-none d-md-block col-md-2 text-muted">
+                        {{ currency.symbol|default:"-" }}
+                    </div>
+
+                    <div class="col-3 col-md-1 text-center">
+                        {% if currency.is_active %}
+                            <span class="badge bg-success-subtle text-success border px-2 py-1">نشطة</span>
+                        {% else %}
+                            <span class="badge bg-light text-secondary border px-2 py-1">غير نشطة</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-12 d-md-none mt-2">
+                        <a href="{% url 'currencies:currency_edit' currency.pk %}" class="btn btn-outline-dark btn-sm w-100 rounded-3">
+                            تعديل
+                        </a>
+                    </div>
+
+                    <div class="d-none d-md-block col-md-2 text-end">
+                        <a href="{% url 'currencies:currency_edit' currency.pk %}" class="btn btn-outline-dark btn-sm rounded-3 px-3">
+                            تعديل
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        {% empty %}
+            <div class="text-center text-muted py-5 px-4">
+                لا توجد عملات
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

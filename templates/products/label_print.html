@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ملصق {{ product.name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --bg: #f3f4f6;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --border: #e5e7eb;
+            --border-strong: #d1d5db;
+            --text: #111827;
+            --muted: #6b7280;
+            --dark: #111827;
+            --light: #eef2f7;
+            --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+            --radius: 16px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .toolbar-wrap {
+            width: 210mm;
+            max-width: 100%;
+            margin: 0 auto 16px auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .toolbar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .toolbar-title {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .toolbar-subtitle {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .toolbar a,
+        .toolbar button {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 16px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: 0.2s ease;
+        }
+
+        .toolbar a:hover,
+        .toolbar button:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-dark {
+            background: var(--dark);
+            color: #fff;
+        }
+
+        .btn-light {
+            background: var(--light);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .copies-form {
+            display: flex;
+            gap: 8px;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-inline-start: auto;
+        }
+
+        .copies-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .copies-field label {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .copies-field input {
+            width: 90px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        .page {
+            width: 210mm;
+            max-width: 100%;
+            margin: 0 auto 20px auto;
+            background: var(--surface);
+            padding: 10mm;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            box-sizing: border-box;
+        }
+
+        .labels-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10mm;
+        }
+
+        .label-card {
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            padding: 12px;
+            min-height: 48mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fff;
+            break-inside: avoid;
+        }
+
+        .label-top {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .product-name {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.5;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .sku {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .barcode {
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-strong);
+        }
+
+        .barcode img {
+            max-width: 100%;
+            max-height: 80px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .barcode-text {
+            font-size: 12px;
+            margin-top: 6px;
+            letter-spacing: 1.2px;
+            color: var(--text);
+            direction: ltr;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 16px;
+            }
+
+            .labels-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .page,
+            .toolbar-wrap {
+                width: 100%;
+            }
+
+            .toolbar-header {
+                align-items: flex-start;
+            }
+
+            .copies-form {
+                margin-inline-start: 0;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .toolbar-wrap {
+                display: none;
+            }
+
+            .page {
+                width: auto;
+                margin: 0;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .label-card {
+                box-shadow: none;
+            }
+
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar-wrap">
+    <div class="toolbar-header">
+        <div>
+            <h1 class="toolbar-title">طباعة ملصق المنتج</h1>
+            <p class="toolbar-subtitle">مراجعة سريعة قبل الطباعة أو الحفظ بصيغة PDF</p>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="window.print()" class="btn-dark">طباعة / حفظ PDF</button>
+        <a href="{% url 'products:detail' product.pk %}" class="btn-light">العودة للمنتج</a>
+
+        <form method="get" class="copies-form">
+            <div class="copies-field">
+                <label for="copies">عدد النسخ</label>
+                <input type="number" name="copies" id="copies" value="{{ copies }}" min="1" max="100">
+            </div>
+            <button type="submit" class="btn-light">تحديث</button>
+        </form>
+    </div>
+</div>
+
+<div class="page">
+    <div class="labels-grid">
+        {% for _ in copies_range %}
+            <div class="label-card">
+                <div class="label-top">
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="price">${{ product.base_price_usd }}</div>
+                    {% if product.sku %}
+                        <div class="sku">SKU: {{ product.sku }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="barcode">
+                    {% if product.barcode_image %}
+                        <img src="{{ product.barcode_image.url }}" alt="{{ product.barcode }}">
+                    {% endif %}
+                    <div class="barcode-text">{{ product.barcode }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>

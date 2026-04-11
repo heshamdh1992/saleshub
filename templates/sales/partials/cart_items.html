@@ -1,0 +1,60 @@
+{% if cart %}
+    {% for key, item in cart.items %}
+        <div class="card shadow-sm border-0 rounded-4 mb-3 pos-cart-item overflow-hidden">
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold fs-6 mb-1">{{ item.name }}</div>
+                        <div class="small text-muted mb-1">سعر الوحدة: ${{ item.price }}</div>
+                        {% if item.barcode %}
+                            <div class="small text-muted">الباركود: {{ item.barcode }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-start">
+                        <div class="fw-bold fs-5 mb-1">x{{ item.quantity }}</div>
+                        {% if item.line_total %}
+                            <div class="small text-dark fw-semibold">${{ item.line_total }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="border rounded-4 p-2 bg-light-subtle mb-3">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-4 d-grid">
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary btn-lg rounded-3 ajax-cart-btn"
+                                data-url="{% url 'sales:cart_decrement' key %}"
+                            >-</button>
+                        </div>
+
+                        <div class="col-4 d-flex align-items-center justify-content-center">
+                            <div class="fw-bold fs-5">{{ item.quantity }}</div>
+                        </div>
+
+                        <div class="col-4 d-grid">
+                            <button
+                                type="button"
+                                class="btn btn-outline-dark btn-lg rounded-3 ajax-cart-btn"
+                                data-url="{% url 'sales:cart_increment' key %}"
+                            >+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger rounded-3 ajax-cart-btn"
+                        data-url="{% url 'sales:cart_remove' key %}"
+                    >حذف من السلة</button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="text-center text-muted py-4">
+        السلة فارغة
+    </div>
+{% endif %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة دفعة{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body p-4 p-md-5">
+        <div class="mb-4">
+            <h1 class="h3 fw-bold mb-2">إضافة دفعة</h1>
+            <p class="text-muted mb-0">تسجيل دفعة جديدة على الفاتورة مع الحفاظ على الدقة المرجعية للعملات والمبالغ</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">رقم الفاتورة</div>
+                    <div class="fw-semibold">{{ sale.invoice_number }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">العميل</div>
+                    <div class="fw-semibold">{{ sale.customer }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100 bg-light-subtle">
+                    <div class="text-muted small mb-1">المتبقي المرجعي</div>
+                    <div class="fw-bold text-danger">${{ sale.amount_due }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">عملة الفاتورة</div>
+                    <div class="fw-semibold">{{ sale.payment_currency|default:"USD" }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">سعر الصرف الحالي للفواتير</div>
+                    <div class="fw-semibold">{{ sale.exchange_rate }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-4 p-md-5">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    {{ form.amount.label }}
+                </label>
+                {{ form.amount }}
+                {{ form.amount.errors }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    {{ form.currency.label }}
+                </label>
+                {{ form.currency }}
+                {{ form.currency.errors }}
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">
+                    {{ form.note.label }}
+                </label>
+                {{ form.note }}
+                {{ form.note.errors }}
+            </div>
+
+            <div class="d-grid">
+                <button class="btn btn-dark py-3 rounded-3">حفظ الدفعة</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

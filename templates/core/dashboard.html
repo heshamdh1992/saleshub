@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة التحكم{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold mb-1">لوحة التحكم</h1>
+        <p class="text-muted mb-0">نظرة سريعة على الأداء اليومي وحالة المتجر</p>
+    </div>
+
+    <div class="col-12 col-md-auto">
+        <a href="{% url 'merchants:current' %}" class="btn btn-dark px-4">
+            إعدادات المتجر
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 rounded-4">
+            <div class="card-body text-center py-4">
+                <div class="text-muted small mb-2">مبيعات اليوم</div>
+                <div class="h4 fw-bold mb-0">${{ total_sales }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 rounded-4">
+            <div class="card-body text-center py-4">
+                <div class="text-muted small mb-2">أرباح اليوم</div>
+                <div class="h4 fw-bold mb-0">${{ total_profit }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 rounded-4">
+            <div class="card-body text-center py-4">
+                <div class="text-muted small mb-2">عدد الفواتير</div>
+                <div class="h4 fw-bold mb-0">{{ total_invoices }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 rounded-4">
+            <div class="card-body text-center py-4">
+                <div class="text-muted small mb-2">إجمالي الديون</div>
+                <div class="h4 fw-bold text-danger mb-0">${{ total_debt }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 rounded-4">
+            <div class="card-body text-center py-4">
+                <div class="text-muted small mb-2">مخزون منخفض</div>
+                <div class="h4 fw-bold text-warning mb-0">{{ low_stock_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100 rounded-4">
+            <div class="card-body text-center py-4">
+                <div class="text-muted small mb-2">نفد المخزون</div>
+                <div class="h4 fw-bold text-danger mb-0">{{ out_of_stock_count }}</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-header bg-white border-0 pt-4 pb-2 px-4">
+        <div class="fw-bold fs-5">الوصول السريع</div>
+        <div class="text-muted small">الوظائف الأساسية لإدارة العمليات اليومية</div>
+    </div>
+
+    <div class="card-body px-4 pb-4">
+        <div class="row g-3">
+            {% if user_role == "owner" or user_role == "manager" or user_role == "cashier" %}
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'sales:pos' %}" class="btn btn-dark py-3 rounded-3">نقطة البيع</a>
+                </div>
+
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'sales:list' %}" class="btn btn-outline-dark py-3 rounded-3">المبيعات</a>
+                </div>
+            {% endif %}
+
+            {% if user_role == "owner" or user_role == "manager" %}
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'products:list' %}" class="btn btn-outline-dark py-3 rounded-3">المنتجات</a>
+                </div>
+
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'reports:sales_report' %}" class="btn btn-outline-dark py-3 rounded-3">تقرير المبيعات</a>
+                </div>
+
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'reports:product_report' %}" class="btn btn-outline-dark py-3 rounded-3">تقرير المنتجات</a>
+                </div>
+
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'reports:customer_report' %}" class="btn btn-outline-dark py-3 rounded-3">تقرير العملاء</a>
+                </div>
+
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'inventory:alerts' %}" class="btn btn-outline-dark py-3 rounded-3">تنبيهات المخزون</a>
+                </div>
+            {% endif %}
+
+            {% if user_role == "owner" %}
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'currencies:currency_list' %}" class="btn btn-outline-dark py-3 rounded-3">العملات</a>
+                </div>
+
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'currencies:rate_list' %}" class="btn btn-outline-dark py-3 rounded-3">أسعار الصرف</a>
+                </div>
+
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'merchants:current' %}" class="btn btn-outline-dark py-3 rounded-3">إعدادات المتجر</a>
+                </div>
+            {% endif %}
+
+            {% if user_role == "owner" or user_role == "manager" or user_role == "cashier" %}
+                <div class="col-6 col-md-4 d-grid">
+                    <a href="{% url 'customers:list' %}" class="btn btn-outline-dark py-3 rounded-3">العملاء</a>
+                </div>
+            {% endif %}
+
+            <div class="col-6 col-md-4 d-grid">
+                <button id="offline-bootstrap-btn" type="button" class="btn btn-dark py-3 rounded-3">
+                    تحديث بيانات الأوفلاين
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pt-4 pb-2 px-4">
+        <div class="fw-bold fs-5">أفضل المنتجات اليوم</div>
+        <div class="text-muted small">المنتجات الأعلى حركة حسب الكمية المباعة</div>
+    </div>
+
+    <div class="list-group list-group-flush">
+        {% for p in top_products %}
+            <div class="list-group-item border-0 px-4 py-3 d-flex justify-content-between align-items-center">
+                <span class="fw-medium">{{ p.product__name }}</span>
+                <span class="badge text-bg-dark rounded-pill px-3 py-2">{{ p.total_qty }}</span>
+            </div>
+        {% empty %}
+            <div class="list-group-item border-0 text-muted text-center py-4">
+                لا يوجد بيانات اليوم
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

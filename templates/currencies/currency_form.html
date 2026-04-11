@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}العملة{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="mb-4 text-center">
+                    <h1 class="h3 fw-bold mb-2">
+                        {% if object %}تعديل عملة{% else %}إضافة عملة{% endif %}
+                    </h1>
+                    <p class="text-muted mb-0">أدخل بيانات العملة بالشكل الصحيح لإدارتها ضمن النظام</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.code.label }}
+                        </label>
+                        {{ form.code }}
+                        {{ form.code.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.name.label }}
+                        </label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.symbol.label }}
+                        </label>
+                        {{ form.symbol }}
+                        {{ form.symbol.errors }}
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            {{ form.is_active.label }}
+                        </label>
+                        {{ form.is_active.errors }}
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-dark py-3 rounded-3">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

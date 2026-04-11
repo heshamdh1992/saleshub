@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>فاتورة {{ sale.invoice_number }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --bg: #f4f6f8;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --border: #e5e7eb;
+            --border-strong: #d1d5db;
+            --text: #111827;
+            --muted: #6b7280;
+            --dark: #111827;
+            --brand: #054239;
+            --brand-soft: #eaf3f1;
+            --light: #eef2f7;
+            --danger-soft: #fef2f2;
+            --shadow: 0 12px 32px rgba(17, 24, 39, 0.08);
+            --radius: 16px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .print-actions {
+            width: 210mm;
+            max-width: 100%;
+            margin: 0 auto 16px auto;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .print-actions button,
+        .print-actions a {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 16px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: 0.2s ease;
+        }
+
+        .print-actions button:hover,
+        .print-actions a:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-dark {
+            background: var(--dark);
+            color: #fff;
+        }
+
+        .btn-light {
+            background: var(--light);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            max-width: 100%;
+            margin: 0 auto;
+            background: var(--surface);
+            padding: 16mm;
+            box-sizing: border-box;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .invoice-box {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .invoice-header {
+            background: linear-gradient(135deg, #111827 0%, #054239 100%);
+            color: #fff;
+            padding: 22px 24px;
+        }
+
+        .invoice-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .invoice-header h1 {
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .invoice-header .sub {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.8;
+        }
+
+        .invoice-badge {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .section {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section:last-child {
+            border-bottom: 0;
+        }
+
+        .section-title {
+            margin: 0 0 14px 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .meta-card {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            background: var(--surface-soft);
+            min-height: 74px;
+        }
+
+        .meta-card .label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .meta-card .value {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .merchant-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .merchant-logo-box {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+            background: #fff;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .merchant-logo-box img {
+            max-height: 80px;
+            max-width: 160px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 14px;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: right;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f3f4f6;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fcfcfd;
+        }
+
+        .totals-wrap {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .totals {
+            width: 100%;
+            max-width: 430px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .totals-row:last-child {
+            border-bottom: 0;
+        }
+
+        .totals-row.final {
+            background: var(--brand-soft);
+            color: var(--brand);
+            font-weight: 700;
+        }
+
+        .totals-row.due {
+            background: var(--danger-soft);
+            font-weight: 700;
+        }
+
+        .small-note {
+            font-size: 13px;
+            color: #374151;
+            margin-top: 14px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            line-height: 1.8;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 16px;
+            }
+
+            .page,
+            .print-actions {
+                width: 100%;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .invoice-header-top,
+            .merchant-block {
+                flex-direction: column;
+            }
+
+            th, td {
+                font-size: 13px;
+                padding: 10px 10px;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .print-actions {
+                display: none;
+            }
+
+            .page {
+                width: auto;
+                min-height: auto;
+                margin: 0;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .invoice-box {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button onclick="window.print()" class="btn-dark">طباعة / حفظ PDF</button>
+    <a href="{% url 'sales:detail' sale.pk %}" class="btn-light">العودة للفواتير</a>
+</div>
+
+<div class="page">
+    <div class="invoice-box">
+
+        <div class="invoice-header">
+            <div class="invoice-header-top">
+                <div>
+                    <h1>{{ sale.merchant.name }}</h1>
+                    <div class="sub">
+                        فاتورة بيع<br>
+                        رقم الفاتورة: {{ sale.invoice_number }}<br>
+                        التاريخ: {{ sale.created_at|date:"Y-m-d H:i" }}
+                    </div>
+                </div>
+                <div class="invoice-badge">Sales Invoice</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">بيانات المتجر</h2>
+
+            <div class="merchant-block">
+                <div style="flex:1;">
+                    <div class="grid">
+                        <div class="meta-card">
+                            <div class="label">المتجر</div>
+                            <div class="value">{{ sale.merchant.name }}</div>
+                        </div>
+
+                        <div class="meta-card">
+                            <div class="label">الهاتف</div>
+                            <div class="value">{{ sale.merchant.phone|default:"-" }}</div>
+                        </div>
+
+                        <div class="meta-card">
+                            <div class="label">العنوان</div>
+                            <div class="value">{{ sale.merchant.address|default:"-" }}</div>
+                        </div>
+
+                        <div class="meta-card">
+                            <div class="label">ملاحظة</div>
+                            <div class="value">{{ sale.merchant.invoice_note|default:"-" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if sale.merchant.logo %}
+                    <div class="merchant-logo-box">
+                        <img src="{{ sale.merchant.logo.url }}" alt="{{ sale.merchant.name }}">
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">بيانات الفاتورة</h2>
+
+            <div class="grid">
+                <div class="meta-card">
+                    <div class="label">العميل</div>
+                    <div class="value">{{ sale.customer|default:"بيع نقدي بدون عميل" }}</div>
+                </div>
+
+                <div class="meta-card">
+                    <div class="label">نوع الدفع / حالة السداد</div>
+                    <div class="value">
+                        {{ sale.get_payment_type_display }} -
+                        <span class="status">{{ sale.get_payment_status_display }}</span>
+                    </div>
+                </div>
+
+                <div class="meta-card">
+                    <div class="label">عملة التسعير</div>
+                    <div class="value">{{ sale.pricing_currency|default:"USD" }}</div>
+                </div>
+
+                <div class="meta-card">
+                    <div class="label">عملة الدفع / سعر الصرف</div>
+                    <div class="value">
+                        {{ sale.payment_currency|default:"USD" }} -
+                        {{ sale.exchange_rate }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">الأصناف</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">الصنف</th>
+                        <th style="width: 15%;">الكمية</th>
+                        <th style="width: 20%;">سعر الوحدة</th>
+                        <th style="width: 25%;">الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in sale.items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.unit_price }}</td>
+                            <td>${{ item.line_total }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">الإجماليات</h2>
+
+            <div class="totals-wrap">
+                <div class="totals">
+                    <div class="totals-row">
+                        <span>الإجمالي قبل الخصم</span>
+                        <span>${{ sale.subtotal }}</span>
+                    </div>
+                    <div class="totals-row">
+                        <span>الخصم</span>
+                        <span>${{ sale.discount_amount }}</span>
+                    </div>
+                    <div class="totals-row final">
+                        <span>الإجمالي النهائي المرجعي</span>
+                        <span>${{ sale.total_amount }}</span>
+                    </div>
+                    <div class="totals-row">
+                        <span>الإجمالي بعملة الدفع</span>
+                        <span>
+                            {{ sale.payment_currency.code|default:"USD" }}
+                            {{ sale.total_amount_payment_currency }}
+                        </span>
+                    </div>
+                    <div class="totals-row">
+                        <span>المدفوع</span>
+                        <span>${{ sale.amount_paid }}</span>
+                    </div>
+                    <div class="totals-row due">
+                        <span>المتبقي</span>
+                        <span>${{ sale.amount_due }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if sale.notes %}
+                <div class="small-note">
+                    <strong>ملاحظات:</strong> {{ sale.notes }}
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

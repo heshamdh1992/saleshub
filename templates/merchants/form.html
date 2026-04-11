@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}إعدادات المتجر{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="mb-4">
+                    <h1 class="h3 fw-bold mb-2">إعدادات المتجر</h1>
+                    <p class="text-muted mb-0">تحديث البيانات الأساسية للمتجر بما يدعم التشغيل والفواتير وهوية العلامة</p>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.name.label }}
+                        </label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.phone.label }}
+                        </label>
+                        {{ form.phone }}
+                        {{ form.phone.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.address.label }}
+                        </label>
+                        {{ form.address }}
+                        {{ form.address.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            {{ form.logo.label }}
+                        </label>
+                        <div class="border rounded-4 p-3 bg-light-subtle">
+                            {{ form.logo }}
+                        </div>
+                        {{ form.logo.errors }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            {{ form.invoice_note.label }}
+                        </label>
+                        {{ form.invoice_note }}
+                        {{ form.invoice_note.errors }}
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            {{ form.is_active.label }}
+                        </label>
+                        {{ form.is_active.errors }}
+                    </div>
+
+                    <div class="d-grid">
+                        <button class="btn btn-dark py-3 rounded-3">حفظ التعديلات</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}بيانات المتجر{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-body p-4 p-md-5">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">{{ merchant.name }}</h1>
+                <p class="text-muted mb-0">البيانات الأساسية للمتجر وإعداداته التشغيلية</p>
+            </div>
+
+            <div>
+                <a href="{% url 'merchants:edit' %}" class="btn btn-outline-dark rounded-3 px-4">
+                    تعديل
+                </a>
+            </div>
+        </div>
+
+        {% if merchant.logo %}
+            <div class="mb-4 text-center text-md-start">
+                <div class="border rounded-4 p-3 bg-light d-inline-block">
+                    <img src="{{ merchant.logo.url }}" alt="{{ merchant.name }}" style="max-height: 90px; max-width: 180px;">
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row g-3">
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">الهاتف</div>
+                    <div class="fw-semibold">{{ merchant.phone|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">العنوان</div>
+                    <div class="fw-semibold">{{ merchant.address|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">ملاحظة الفاتورة</div>
+                    <div class="fw-semibold">{{ merchant.invoice_note|default:"-" }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">الحالة</div>
+                    <div class="fw-semibold">
+                        {% if merchant.is_active %}
+                            <span class="badge bg-success-subtle text-success border px-2 py-1">نشط</span>
+                        {% else %}
+                            <span class="badge bg-light text-secondary border px-2 py-1">غير نشط</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">تاريخ الإنشاء</div>
+                    <div class="fw-semibold">{{ merchant.created_at }}</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

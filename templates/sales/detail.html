@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}تفاصيل الفاتورة{% endblock %}
+
+{% block content %}
+
+<div class="d-grid mb-4">
+    <a href="{% url 'sales:print' sale.pk %}" class="btn btn-outline-dark rounded-3 py-3">
+        طباعة / حفظ PDF
+    </a>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body p-4 p-md-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">{{ sale.invoice_number }}</h1>
+                <p class="text-muted mb-0">ملخص الفاتورة وحالة السداد والبيانات المالية</p>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-2">بيانات الفاتورة</div>
+                    <p class="mb-2"><strong>نوع الدفع:</strong> {{ sale.get_payment_type_display }}</p>
+                    <p class="mb-2"><strong>حالة السداد:</strong> {{ sale.get_payment_status_display }}</p>
+                    <p class="mb-0"><strong>العميل:</strong> {{ sale.customer|default:"بيع نقدي بدون عميل" }}</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-2">بيانات التسعير</div>
+                    <p class="mb-2"><strong>عملة التسعير:</strong> {{ sale.pricing_currency|default:"USD" }}</p>
+                    <p class="mb-2"><strong>عملة الدفع:</strong> {{ sale.payment_currency|default:"USD" }}</p>
+                    <p class="mb-2"><strong>سعر الصرف:</strong> {{ sale.exchange_rate }}</p>
+                    <p class="mb-2"><strong>الإجمالي قبل الخصم:</strong> ${{ sale.subtotal }}</p>
+                    <p class="mb-2"><strong>الخصم:</strong> ${{ sale.discount_amount }}</p>
+                    <p class="mb-0"><strong>الإجمالي النهائي:</strong> ${{ sale.total_amount }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100 bg-light-subtle">
+                    <div class="text-muted small mb-1">الإجمالي المرجعي</div>
+                    <div class="fs-5 fw-bold">${{ sale.total_amount }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="border rounded-4 p-3 h-100 bg-light-subtle">
+                    <div class="text-muted small mb-1">الإجمالي بعملة الدفع</div>
+                    <div class="fs-5 fw-bold">
+                        {{ sale.payment_currency.code|default:"USD" }} {{ sale.total_amount_payment_currency }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">المدفوع (مرجعي)</div>
+                    <div class="fw-bold">${{ sale.amount_paid }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">المتبقي (مرجعي)</div>
+                    <div class="fw-bold {% if sale.amount_due > 0 %}text-danger{% else %}text-success{% endif %}">
+                        ${{ sale.amount_due }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="border rounded-4 p-3 h-100">
+                    <div class="text-muted small mb-1">الربح المرجعي</div>
+                    <div class="fw-bold">${{ sale.total_profit }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4 mb-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4 fw-bold">الأصناف</div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for item in sale.items.all %}
+                <div class="list-group-item border-0 px-4 py-3">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <div class="fw-bold mb-1">{{ item.product.name }}</div>
+                            <div class="small text-muted">
+                                الكمية: {{ item.quantity }} |
+                                سعر الوحدة: ${{ item.unit_price }} |
+                                الإجمالي: ${{ item.line_total }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if sale.payment_type == "debt" and sale.payment_status != "paid" %}
+<div class="d-grid mb-4">
+    <a href="{% url 'sales:payment_add' sale.pk %}" class="btn btn-dark rounded-3 py-3">إضافة دفعة</a>
+</div>
+{% endif %}
+
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <div class="card-header bg-white border-bottom py-3 px-4 fw-bold">الدفعات</div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for payment in sale.payments.all %}
+                <div class="list-group-item border-0 px-4 py-3">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <div class="fw-bold mb-1">
+                                {{ payment.currency.code|default:"USD" }} {{ payment.original_amount }}
+                            </div>
+                            <div class="small text-muted">
+                                القيمة المرجعية: ${{ payment.amount }}
+                            </div>
+                            <div class="small text-muted">
+                                سعر الصرف: {{ payment.exchange_rate }}
+                            </div>
+                        </div>
+
+                        <div class="text-start">
+                            <div class="small text-muted">{{ payment.created_at }}</div>
+                            {% if payment.note %}
+                                <div class="small text-muted mt-1">{{ payment.note }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="list-group-item border-0 text-muted px-4 py-4">لا توجد دفعات</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
