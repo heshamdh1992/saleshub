@@ -1,21 +1,40 @@
 from django.core.exceptions import PermissionDenied
 
 
+from django.core.exceptions import PermissionDenied
+
+
 class MerchantRequiredMixin:
     def get_merchant(self):
         user = self.request.user
+
+        if user.is_superuser:
+            return None
+
         staff_profile = getattr(user, "staff_profile", None)
         if not staff_profile or not staff_profile.merchant:
             raise PermissionDenied("لا يوجد محل مرتبط بهذا المستخدم.")
+
         return staff_profile.merchant
 
     def get_staff_profile(self):
-        staff_profile = getattr(self.request.user, "staff_profile", None)
+        user = self.request.user
+
+        if user.is_superuser:
+            return None
+
+        staff_profile = getattr(user, "staff_profile", None)
         if not staff_profile:
             raise PermissionDenied("لا يوجد ملف موظف مرتبط بهذا المستخدم.")
+
         return staff_profile
 
     def get_role(self):
+        user = self.request.user
+
+        if user.is_superuser:
+            return "owner"
+
         return self.get_staff_profile().role
 
 
