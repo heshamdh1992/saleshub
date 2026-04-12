@@ -1,1 +1,1 @@
-web: /app/.venv/bin/gunicorn config.wsgi:application
+web: gunicorn config.wsgi:application
