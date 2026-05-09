@@ -249,11 +249,14 @@
         background: #fff;
     }
 
- 
+    body * {
+        visibility: hidden;
+    }
 
- .toolbar-wrap {
-    display: none !important;
-}
+    .label-card,
+    .label-card * {
+        visibility: visible;
+    }
 
     .toolbar-wrap {
         display: none !important;
@@ -307,27 +310,19 @@
         display: none;
     }
 
-.barcode {
-    display: block !important;
-    width: 28mm !important;
-    height: 9mm !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    border: none !important;
-    overflow: visible !important;
-}
+    .barcode {
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
 
-.barcode img {
-    display: block !important;
-    width: 28mm !important;
-    height: 9mm !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: fill !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin: 0 auto !important;
-}
+    .barcode img {
+        width: 26mm;
+        height: 8mm;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto;
+    }
 
     .barcode-text {
         font-size: 5px;
@@ -377,7 +372,7 @@
 
                 <div class="barcode">
                     {% if product.barcode_image %}
-                        <img class="barcode-img" src="{{ product.barcode_image.url }}?v={{ product.updated_at|date:'U' }}" alt="{{ product.barcode }}">
+                        <img src="{{ product.barcode_image.url }}" alt="{{ product.barcode }}">
                     {% endif %}
                     <div class="barcode-text">{{ product.barcode }}</div>
                 </div>
