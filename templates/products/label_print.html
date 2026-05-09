@@ -232,15 +232,16 @@
             }
         }
 
-      @media print {
+     @media print {
     @page {
-        size: 30mm 20mm;
+        size: 45mm 32mm;
         margin: 0;
     }
 
-    html, body {
-        width: 30mm !important;
-        height: 20mm !important;
+    html,
+    body {
+        width: 45mm !important;
+        height: 32mm !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #fff !important;
@@ -248,40 +249,38 @@
     }
 
     .toolbar-wrap,
-    .sku,
-    .barcode-text {
+    .sku {
         display: none !important;
     }
 
     .page,
     .labels-grid {
-        width: 30mm !important;
-        height: 20mm !important;
+        width: 45mm !important;
+        height: 32mm !important;
         margin: 0 !important;
         padding: 0 !important;
         display: block !important;
-        background: #fff !important;
         box-shadow: none !important;
         border: none !important;
+        background: #fff !important;
     }
 
     .label-card {
-        width: 30mm !important;
-        height: 20mm !important;
+        width: 45mm !important;
+        height: 32mm !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 1.5mm !important;
         border: none !important;
         border-radius: 0 !important;
         box-shadow: none !important;
         background: #fff !important;
         overflow: hidden !important;
-
-        display: block !important;
         position: relative !important;
+        display: block !important;
 
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
         page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 
     .label-top {
@@ -292,16 +291,16 @@
 
     .product-name {
         position: absolute !important;
-        top: 1mm !important;
-        left: 1mm !important;
-        right: 1mm !important;
+        top: 2mm !important;
+        left: 2mm !important;
+        right: 2mm !important;
 
-        font-size: 5px !important;
-        line-height: 1 !important;
+        font-size: 8px !important;
+        line-height: 1.1 !important;
         font-weight: bold !important;
         text-align: center !important;
 
-        max-height: 4mm !important;
+        max-height: 7mm !important;
         overflow: hidden !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -309,11 +308,11 @@
 
     .price {
         position: absolute !important;
-        top: 5mm !important;
+        top: 9mm !important;
         left: 0 !important;
         right: 0 !important;
 
-        font-size: 6px !important;
+        font-size: 9px !important;
         line-height: 1 !important;
         font-weight: bold !important;
         text-align: center !important;
@@ -324,11 +323,11 @@
 
     .barcode {
         position: absolute !important;
-        left: 1mm !important;
-        right: 1mm !important;
-        top: 8mm !important;
+        left: 3mm !important;
+        right: 3mm !important;
+        top: 15mm !important;
 
-        height: 10mm !important;
+        height: 13mm !important;
         margin: 0 !important;
         padding: 0 !important;
         border: none !important;
@@ -338,13 +337,27 @@
 
     .barcode img,
     .barcode-img {
-        width: 28mm !important;
-        height: 10mm !important;
+        width: 38mm !important;
+        height: 11mm !important;
         max-width: none !important;
         max-height: none !important;
         display: block !important;
         margin: 0 auto !important;
         object-fit: fill !important;
+    }
+
+    .barcode-text {
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 1mm !important;
+
+        font-size: 6px !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        direction: ltr !important;
     }
 }
     </style>
