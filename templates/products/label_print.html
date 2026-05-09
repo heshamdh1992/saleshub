@@ -232,20 +232,30 @@
             }
         }
 
-        @media print {
+       @media print {
+
     @page {
-        size: 50mm 30mm;
+        size: 30mm 20mm;
         margin: 0;
     }
 
     html,
     body {
-        width: 40mm;
-        height: 30mm;
+        width: 30mm;
+        height: 20mm;
         margin: 0;
         padding: 0;
-        background: #fff;
         overflow: hidden;
+        background: #fff;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    .label-card,
+    .label-card * {
+        visibility: visible;
     }
 
     .toolbar-wrap {
@@ -253,12 +263,9 @@
     }
 
     .page {
-        width: 40mm;
         margin: 0;
         padding: 0;
-        box-shadow: none;
-        border-radius: 0;
-        background: #fff;
+        width: 30mm;
     }
 
     .labels-grid {
@@ -266,35 +273,37 @@
     }
 
     .label-card {
-        width: 40mm;
-        height: 30mm;
+        width: 30mm;
+        height: 20mm;
+        padding: 1mm;
         margin: 0;
-        padding: 1.5mm;
         border: none;
-        border-radius: 0;
         box-shadow: none;
-        background: #fff;
+        page-break-after: always;
+        overflow: hidden;
+
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        page-break-after: always;
-        page-break-inside: avoid;
-        break-inside: avoid;
-        overflow: hidden;
+        align-items: center;
     }
 
     .product-name {
-        font-size: 7px;
-        line-height: 1.2;
-        max-height: 8mm;
-        overflow: hidden;
+        font-size: 6px;
+        font-weight: bold;
+        line-height: 1;
         text-align: center;
+        margin: 0;
+        padding: 0;
+        max-height: 5mm;
+        overflow: hidden;
     }
 
     .price {
-        font-size: 8px;
-        line-height: 1.1;
-        text-align: center;
+        font-size: 7px;
+        font-weight: bold;
+        margin: 0;
+        line-height: 1;
     }
 
     .sku {
@@ -302,28 +311,24 @@
     }
 
     .barcode {
-        margin-top: 0;
-        padding-top: 0;
-        border-top: none;
-        text-align: center;
+        border: none;
+        margin: 0;
+        padding: 0;
     }
 
     .barcode img {
-        width: 34mm;
-        height: 12mm;
-        max-width: none;
-        max-height: none;
+        width: 26mm;
+        height: 8mm;
         object-fit: contain;
         display: block;
         margin: 0 auto;
     }
 
     .barcode-text {
-        font-size: 6px;
+        font-size: 5px;
         line-height: 1;
-        margin-top: 1mm;
-        letter-spacing: 0.5px;
-        direction: ltr;
+        letter-spacing: 0;
+        margin-top: 0.5mm;
         text-align: center;
     }
 }
