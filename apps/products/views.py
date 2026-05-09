@@ -11,7 +11,11 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import DetailView, TemplateView
+import base64
+from io import BytesIO
 
+from barcode import Code128
+from barcode.writer import ImageWriter
 
 class ProductListView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, ListView):
     model = Product
@@ -128,6 +132,25 @@ class ProductLabelPrintView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, Det
     def get_queryset(self):
         return Product.objects.filter(merchant=self.get_merchant())
 
+    def generate_barcode_base64(self, barcode_value):
+        buffer = BytesIO()
+
+        barcode_obj = Code128(str(barcode_value), writer=ImageWriter())
+        barcode_obj.write(
+            buffer,
+            options={
+                "write_text": False,
+                "module_width": 0.35,
+                "module_height": 9,
+                "quiet_zone": 1.5,
+                "font_size": 0,
+                "text_distance": 0,
+                "dpi": 300,
+            }
+        )
+
+        return base64.b64encode(buffer.getvalue()).decode("utf-8")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         copies = self.request.GET.get("copies", "1")
@@ -137,14 +160,16 @@ class ProductLabelPrintView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, Det
         except ValueError:
             copies = 1
 
-        if copies < 1:
-            copies = 1
-        if copies > 100:
-            copies = 100
+        copies = max(1, min(copies, 100))
 
-        if not self.object.barcode or not self.object.barcode_image:
-            self.object.generate_barcode_image(save_model=True)
+        product = self.object
 
+        if not product.barcode:
+            product.barcode = product.generate_internal_barcode_value()
+            product.save(update_fields=["barcode"])
+
+        context["barcode_base64"] = self.generate_barcode_base64(product.barcode)
         context["copies_range"] = range(copies)
         context["copies"] = copies
-        return context    
+
+        return context
