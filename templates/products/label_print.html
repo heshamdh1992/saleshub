@@ -239,23 +239,10 @@
         margin: 0;
     }
 
-    html,
     body {
-        width: 30mm;
-        height: 20mm;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: #fff;
-    }
-
-    body * {
-        visibility: hidden;
-    }
-
-    .label-card,
-    .label-card * {
-        visibility: visible;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
     }
 
     .toolbar-wrap {
@@ -263,75 +250,81 @@
     }
 
     .page {
-        margin: 0;
-        padding: 0;
-        width: 30mm;
+        width: 30mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        background: white !important;
     }
 
     .labels-grid {
-        display: block;
+        display: block !important;
     }
 
     .label-card {
-        width: 30mm;
-        height: 20mm;
-        padding: 1mm;
-        margin: 0;
-        border: none;
-        box-shadow: none;
-        page-break-after: always;
-        overflow: hidden;
+        width: 30mm !important;
+        height: 20mm !important;
 
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
+        margin: 0 !important;
+        padding: 1mm !important;
+
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+
+        overflow: hidden !important;
+        page-break-after: always;
     }
 
     .product-name {
-        font-size: 6px;
-        font-weight: bold;
-        line-height: 1;
-        text-align: center;
-        margin: 0;
-        padding: 0;
-        max-height: 5mm;
-        overflow: hidden;
+        font-size: 6px !important;
+        font-weight: bold !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        margin: 0 !important;
     }
 
     .price {
-        font-size: 7px;
-        font-weight: bold;
-        margin: 0;
-        line-height: 1;
+        font-size: 7px !important;
+        font-weight: bold !important;
+        margin: 0 !important;
     }
 
     .sku {
-        display: none;
+        display: none !important;
     }
 
     .barcode {
-        border: none;
-        margin: 0;
-        padding: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        text-align: center !important;
     }
 
+    .barcode img,
     .barcode-img {
-    display: block !important;
-    width: 28mm !important;
-    height: 9mm !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: fill !important;
-    margin: 0 auto !important;
-}
+        width: 26mm !important;
+        height: 8mm !important;
+
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+
+        object-fit: fill !important;
+
+        margin: 0 auto !important;
+    }
 
     .barcode-text {
-        font-size: 5px;
-        line-height: 1;
-        letter-spacing: 0;
-        margin-top: 0.5mm;
-        text-align: center;
+        font-size: 5px !important;
+        margin-top: 0.5mm !important;
+        line-height: 1 !important;
+        text-align: center !important;
     }
 }
     </style>
