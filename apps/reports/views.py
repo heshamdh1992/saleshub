@@ -209,45 +209,44 @@ class ProductReportView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, Templat
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         merchant = self.get_merchant()
 
         date_from = self.request.GET.get("date_from", "").strip()
         date_to = self.request.GET.get("date_to", "").strip()
         sort_by = self.request.GET.get("sort_by", "qty").strip()
 
-        sale_items = SaleItem.objects.filter(
-            sale__merchant=merchant
-        ).select_related("product", "sale")
+        products = Product.objects.filter(
+            merchant=merchant,
+            is_active=True
+        ).order_by("name")
 
-        if date_from:
-            sale_items = sale_items.filter(sale__created_at__date__gte=date_from)
+        stats_list = []
 
-        if date_to:
-            sale_items = sale_items.filter(sale__created_at__date__lte=date_to)
-
-        product_stats = (
-            sale_items.values(
-                "product__id",
-                "product__name",
-                "product__stock_quantity",
-                "product__reorder_level",
+        for product in products:
+            sale_items = SaleItem.objects.filter(
+                sale__merchant=merchant,
+                product=product
             )
-            .annotate(
+
+            if date_from:
+                sale_items = sale_items.filter(sale__created_at__date__gte=date_from)
+
+            if date_to:
+                sale_items = sale_items.filter(sale__created_at__date__lte=date_to)
+
+            totals = sale_items.aggregate(
                 total_qty=Sum("quantity"),
                 total_sales=Sum("line_total"),
                 total_cost=Sum(F("unit_cost") * F("quantity")),
             )
-        )
 
-        stats_list = []
-        for row in product_stats:
-            total_sales = row["total_sales"] or Decimal("0")
-            total_cost = row["total_cost"] or Decimal("0")
+            total_qty = totals["total_qty"] or 0
+            total_sales = totals["total_sales"] or Decimal("0")
+            total_cost = totals["total_cost"] or Decimal("0")
             total_profit = total_sales - total_cost
 
-            stock_quantity = row["product__stock_quantity"] or 0
-            reorder_level = row["product__reorder_level"] or 0
+            stock_quantity = product.stock_quantity or 0
+            reorder_level = product.reorder_level or 0
 
             if stock_quantity <= 0:
                 stock_status = "out"
@@ -257,12 +256,12 @@ class ProductReportView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, Templat
                 stock_status = "ok"
 
             stats_list.append({
-                "product_id": row["product__id"],
-                "product_name": row["product__name"],
+                "product_id": product.id,
+                "product_name": product.name,
                 "stock_quantity": stock_quantity,
                 "reorder_level": reorder_level,
                 "stock_status": stock_status,
-                "total_qty": row["total_qty"] or 0,
+                "total_qty": total_qty,
                 "total_sales": total_sales,
                 "total_cost": total_cost,
                 "total_profit": total_profit,
@@ -277,16 +276,12 @@ class ProductReportView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, Templat
         else:
             stats_list.sort(key=lambda x: x["total_qty"], reverse=True)
 
-        total_products = Product.objects.filter(merchant=merchant, is_active=True).count()
-        low_stock_count = Product.objects.filter(
-            merchant=merchant,
-            is_active=True,
+        total_products = products.count()
+        low_stock_count = products.filter(
             stock_quantity__gt=0,
             stock_quantity__lte=F("reorder_level")
         ).count()
-        out_of_stock_count = Product.objects.filter(
-            merchant=merchant,
-            is_active=True,
+        out_of_stock_count = products.filter(
             stock_quantity__lte=0
         ).count()
 
@@ -300,7 +295,7 @@ class ProductReportView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, Templat
             "sort_by": sort_by,
         })
 
-        return context    
+        return context
 
 class CustomerReportView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, TemplateView):
     template_name = "reports/customer_report.html"
