@@ -13,9 +13,12 @@ from django.views import View
 from django.views.generic import DetailView, TemplateView
 import base64
 from io import BytesIO
-
+from django.http import HttpResponse
 from barcode import Code128
 from barcode.writer import ImageWriter
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+
 
 class ProductListView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, ListView):
     model = Product
@@ -86,6 +89,81 @@ class ProductUpdateView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, UpdateV
         messages.success(self.request, "تم تعديل المنتج بنجاح.")
         return super().form_valid(form)
 
+
+class ProductExportExcelView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        merchant = self.get_merchant()
+
+        products = Product.objects.filter(
+            merchant=merchant,
+            is_active=True
+        ).order_by("name")
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Products"
+
+        headers = [
+            "اسم المنتج",
+            "SKU",
+            "الباركود",
+            "سعر البيع USD",
+            "سعر التكلفة USD",
+            "المخزون الحالي",
+            "حد التنبيه",
+            "حالة المخزون",
+        ]
+
+        ws.append(headers)
+
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+            cell.alignment = Alignment(horizontal="center")
+
+        for product in products:
+            if product.stock_quantity <= 0:
+                stock_status = "نفد المخزون"
+            elif product.stock_quantity <= product.reorder_level:
+                stock_status = "مخزون منخفض"
+            else:
+                stock_status = "جيد"
+
+            ws.append([
+                product.name,
+                product.sku or "",
+                product.barcode or "",
+                float(product.base_price_usd or 0),
+                float(product.cost_price_usd or 0),
+                product.stock_quantity,
+                product.reorder_level,
+                stock_status,
+            ])
+
+        column_widths = {
+            "A": 30,
+            "B": 18,
+            "C": 22,
+            "D": 16,
+            "E": 16,
+            "F": 16,
+            "G": 16,
+            "H": 18,
+        }
+
+        for col, width in column_widths.items():
+            ws.column_dimensions[col].width = width
+
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        response = HttpResponse(
+            output.getvalue(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'attachment; filename="products.xlsx"'
+
+        return response
 
 class ProductDetailView(LoginRequiredMixin, ManagerOrOwnerRequiredMixin, DetailView):
     model = Product

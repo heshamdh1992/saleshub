@@ -6,7 +6,7 @@ from .views import (
     ProductDetailView,
     BarcodeScannerView,
 )
-from .views import GenerateBarcodeView, ProductLabelPrintView
+from .views import GenerateBarcodeView, ProductLabelPrintView,ProductExportExcelView
 app_name = "products"
 
 urlpatterns = [
@@ -17,5 +17,6 @@ urlpatterns = [
     path("scanner/", BarcodeScannerView.as_view(), name="scanner"),
     path("<int:pk>/generate-barcode/", GenerateBarcodeView.as_view(), name="generate_barcode"),
     path("<int:pk>/label/", ProductLabelPrintView.as_view(), name="label_print"),
+    path("export/excel/", ProductExportExcelView.as_view(), name="export_excel"),
 
 ]
